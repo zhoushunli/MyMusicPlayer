@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/playBg"
+    tools:context="com.zhousl.musicplayer.MainActivity">
+
+    <com.zhousl.musicplayer.view.PlayProgressView
+        android:layout_marginTop="100dp"
+        android:id="@+id/progress"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="30dp"
+        android:layout_width="wrap_content"
+        app:dot_radius="50dp"
+        app:dot_color="@color/colorAccent"
+        android:layout_height="20dp" />
+</RelativeLayout>

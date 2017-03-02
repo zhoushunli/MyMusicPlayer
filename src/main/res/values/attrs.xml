@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PlayProgressView">
+        <attr name="progress_bg" format="color" />
+        <attr name="progress_foreground" format="color" />
+        <attr name="dot_color" format="color" />
+        <attr name="dot_radius" format="dimension" />
+        <attr name="dot_image" format="reference" />
+        <attr name="progress_height" format="dimension"/>
+    </declare-styleable>
+    <declare-styleable name="LrcView"></declare-styleable>
+    <declare-styleable name="LoadProgressView"></declare-styleable>
+</resources>
