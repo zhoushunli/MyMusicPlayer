@@ -6,7 +6,13 @@
         <attr name="dot_color" format="color" />
         <attr name="dot_radius" format="dimension" />
         <attr name="dot_image" format="reference" />
-        <attr name="progress_height" format="dimension"/>
+        <attr name="progress_height" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="CircleSpinView">
+        <attr name="circle_ring_color" format="color" />
+        <attr name="circle_ring_enable" format="boolean" />
+        <attr name="circle_ring_width" format="dimension" />
+        <attr name="circle_src" format="reference"/>
     </declare-styleable>
     <declare-styleable name="LrcView"></declare-styleable>
     <declare-styleable name="LoadProgressView"></declare-styleable>

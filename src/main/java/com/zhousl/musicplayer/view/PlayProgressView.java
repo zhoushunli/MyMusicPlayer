@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -148,7 +149,9 @@ public class PlayProgressView extends View {
                 downTime = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (Math.abs(transProToLocation(mProgress) - x )< 10){
+                float transP = transProToLocation(mProgress);
+                Log.i("movements---","transp="+transP+"========"+"x="+x);
+                if (Math.abs(transP - x )< 100){
                     float v = x * 100 / (measuredWidth - mDotRadius * 2);
                     setProgress(v);
                 }
@@ -160,6 +163,9 @@ public class PlayProgressView extends View {
                     setProgress(v);
                 }
                 downTime = 0;
+                break;
+            case MotionEvent.ACTION_HOVER_EXIT:
+                event.setAction(MotionEvent.ACTION_CANCEL);
                 break;
         }
         return true;
