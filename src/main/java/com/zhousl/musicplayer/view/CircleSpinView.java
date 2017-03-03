@@ -6,6 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -25,6 +28,8 @@ public class CircleSpinView extends View {
     private int measuredHeight;
     private int srcRes;
     private Bitmap mCircleImage;
+    private Canvas mCanvas;
+    private Bitmap buffBmp;
 
     public CircleSpinView(Context context) {
         super(context);
@@ -37,10 +42,17 @@ public class CircleSpinView extends View {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        initPaint();
         initAttrs(context, attrs);
+        initPaint();
+        initCanvas();
     }
 
+    private void initCanvas(){
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), srcRes);
+        buffBmp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(buffBmp);
+        mCanvas.setDrawFilter(new PaintFlagsDrawFilter(0,Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG));
+    }
     private void initPaint() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     }
@@ -66,7 +78,7 @@ public class CircleSpinView extends View {
         int mode = MeasureSpec.getMode(heightMeasureSpec);
         int size = MeasureSpec.getSize(heightMeasureSpec);
         if (mode == MeasureSpec.AT_MOST) {
-            size = getResources().getDisplayMetrics().heightPixels * 2 / 3;
+            size = getResources().getDisplayMetrics().widthPixels * 2 / 3;
         }
         return size;
     }
@@ -85,12 +97,25 @@ public class CircleSpinView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         measuredWidth = getMeasuredWidth();
         measuredHeight = getMeasuredHeight();
-        BitmapFactory.Options op=new BitmapFactory.Options();
-        op.inJustDecodeBounds=true;
+
+        BitmapFactory.Options op = new BitmapFactory.Options();
+        op.inJustDecodeBounds = true;
+        op.inSampleSize = 2;
+        mCircleImage = BitmapFactory.decodeResource(getResources(), srcRes, op);
         int outHeight = op.outHeight;
         int outWidth = op.outWidth;
-        //TODO 下次再做
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), srcRes,op);
+
+        float heightRate = outHeight * 1.0f / measuredHeight;
+        float widthRate = outWidth * 1.0f / measuredWidth;
+        if (heightRate >= 1 && widthRate >= 1) {
+            if (heightRate > widthRate) {
+                op.inSampleSize = 1;
+            } else {
+                op.inSampleSize = 1;
+            }
+        }
+        op.inJustDecodeBounds=false;
+        mCircleImage = BitmapFactory.decodeResource(getResources(), srcRes);
 
         if (mCircleImage == null) {
             mCircleImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
@@ -100,18 +125,23 @@ public class CircleSpinView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        drawRing(canvas);
+        canvas.setDrawFilter(new PaintFlagsDrawFilter(0,Paint.ANTI_ALIAS_FLAG|Paint.DITHER_FLAG|Paint.FILTER_BITMAP_FLAG));
         drawCircleImage(canvas);
+        drawRing(canvas);
     }
 
     private void drawRing(Canvas canvas) {
         mPaint.setColor(mCircleRingColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mCircleWidth);
+        canvas.drawCircle(measuredHeight/2,measuredWidth/2,measuredHeight/2-mCircleWidth,mPaint);
     }
 
     private void drawCircleImage(Canvas canvas) {
-
+        mCanvas.drawCircle(measuredWidth/2,measuredWidth/2,measuredWidth/2-mCircleWidth,mPaint);
+        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        mCanvas.drawBitmap(mCircleImage,0,0,mPaint);
+        canvas.drawBitmap(buffBmp,0,0,null);
     }
 
     public int getCircleRingColor() {

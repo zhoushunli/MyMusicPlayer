@@ -18,4 +18,10 @@
         app:progress_foreground="@color/colorAccent"
         app:progress_bg="#88888888"
         android:layout_height="20dp" />
+    <com.zhousl.musicplayer.view.CircleSpinView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:circle_src="@mipmap/pic"
+        app:circle_ring_width="20dp"
+        app:circle_ring_color="#fff"/>
 </RelativeLayout>
