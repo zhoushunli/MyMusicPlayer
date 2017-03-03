@@ -17,11 +17,17 @@
         app:progress_height="10dp"
         app:progress_foreground="@color/colorAccent"
         app:progress_bg="#88888888"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="50dp"
         android:layout_height="20dp" />
     <com.zhousl.musicplayer.view.CircleSpinView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:circle_src="@mipmap/pic"
         app:circle_ring_width="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
         app:circle_ring_color="#fff"/>
 </RelativeLayout>

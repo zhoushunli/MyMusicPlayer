@@ -9,7 +9,9 @@ import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.SweepGradient;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.zhousl.musicplayer.R;
@@ -47,12 +49,13 @@ public class CircleSpinView extends View {
         initCanvas();
     }
 
-    private void initCanvas(){
+    private void initCanvas() {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), srcRes);
-        buffBmp = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        buffBmp = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(buffBmp);
-        mCanvas.setDrawFilter(new PaintFlagsDrawFilter(0,Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG));
+        mCanvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG|Paint.DITHER_FLAG));
     }
+
     private void initPaint() {
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
     }
@@ -109,12 +112,12 @@ public class CircleSpinView extends View {
         float widthRate = outWidth * 1.0f / measuredWidth;
         if (heightRate >= 1 && widthRate >= 1) {
             if (heightRate > widthRate) {
-                op.inSampleSize = 1;
+                op.inSampleSize = outHeight;
             } else {
-                op.inSampleSize = 1;
+                op.inSampleSize = outWidth;
             }
         }
-        op.inJustDecodeBounds=false;
+        op.inJustDecodeBounds = false;
         mCircleImage = BitmapFactory.decodeResource(getResources(), srcRes);
 
         if (mCircleImage == null) {
@@ -122,26 +125,36 @@ public class CircleSpinView extends View {
         }
     }
 
+    float i = 0;
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.setDrawFilter(new PaintFlagsDrawFilter(0,Paint.ANTI_ALIAS_FLAG|Paint.DITHER_FLAG|Paint.FILTER_BITMAP_FLAG));
+        canvas.rotate(i,measuredWidth/2,measuredHeight/2);
         drawCircleImage(canvas);
         drawRing(canvas);
+        i++;
+        if (i == 360) {
+            i = 0;
+        }
+        Log.i("drawbitmap--", i + "");
+        invalidate();
     }
 
     private void drawRing(Canvas canvas) {
         mPaint.setColor(mCircleRingColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mCircleWidth);
-        canvas.drawCircle(measuredHeight/2,measuredWidth/2,measuredHeight/2-mCircleWidth,mPaint);
+        mPaint.setShader(new SweepGradient(measuredHeight / 2, measuredWidth / 2, getResources().getColor(R.color.colorAccent), getResources().getColor(R.color.colorPrimary)));
+        canvas.drawCircle(measuredHeight / 2, measuredWidth / 2, measuredHeight / 2 - mCircleWidth, mPaint);
     }
 
     private void drawCircleImage(Canvas canvas) {
-        mCanvas.drawCircle(measuredWidth/2,measuredWidth/2,measuredWidth/2-mCircleWidth,mPaint);
+        mCanvas.drawCircle(measuredWidth / 2, measuredWidth / 2, measuredWidth / 2 - mCircleWidth, mPaint);
         mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        mCanvas.drawBitmap(mCircleImage,0,0,mPaint);
-        canvas.drawBitmap(buffBmp,0,0,null);
+        mCanvas.drawBitmap(mCircleImage, 0, 0, mPaint);
+        canvas.drawBitmap(buffBmp, 0, 0, null);
+        mPaint.setXfermode(null);
     }
 
     public int getCircleRingColor() {
